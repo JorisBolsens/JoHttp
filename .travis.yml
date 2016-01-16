@@ -1,0 +1,10 @@
+language: android
+android:
+    components:
+	- platform-tools
+	- tools
+	- build-tools-22.0.1
+	- android-19
+    licenses:
+	- 'android-sdk-license-.+'
+	- 'google-gdk-license-.+
