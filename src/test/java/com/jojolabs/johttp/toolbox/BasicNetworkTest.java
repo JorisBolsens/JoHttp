@@ -15,6 +15,8 @@ import org.robolectric.RobolectricTestRunner;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,9 +25,10 @@ public class BasicNetworkTest {
 
     @Test public void headersAndPostParams() throws Exception {
         MockHttpStack mockHttpStack = new MockHttpStack();
-        BasicHttpResponse fakeResponse = new BasicHttpResponse(new ProtocolVersion("HTTP", 1, 1),
-                200, "OK");
-        fakeResponse.setEntity(new StringEntity("foobar"));
+        VolleyResponse fakeResponse = new VolleyResponse();
+        fakeResponse.setStatusCode(200);
+        InputStream inputStream = new ByteArrayInputStream("foobar".getBytes());
+        fakeResponse.setContent(inputStream);
         mockHttpStack.setResponseToReturn(fakeResponse);
         BasicNetwork httpNetwork = new BasicNetwork(mockHttpStack);
         Request<String> request = new Request<String>(Request.Method.GET, "http://foo", null) {

@@ -32,6 +32,10 @@ repositories {
 android {
     compileSdkVersion 22
     buildToolsVersion = '22.0.1'
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 apply from: 'rules.gradle'

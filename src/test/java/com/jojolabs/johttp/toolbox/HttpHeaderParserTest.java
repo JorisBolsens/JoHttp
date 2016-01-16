@@ -14,6 +14,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -252,25 +253,4 @@ public class HttpHeaderParserTest {
         assertEquals("ISO-8859-1", HttpHeaderParser.parseCharset(headers));
     }
 
-    @Test public void parseCaseInsensitive() {
-
-        long now = System.currentTimeMillis();
-
-        Header[] headersArray = new Header[5];
-        headersArray[0] = new BasicHeader("eTAG", "Yow!");
-        headersArray[1] = new BasicHeader("DATE", rfc1123Date(now));
-        headersArray[2] = new BasicHeader("expires", rfc1123Date(now + ONE_HOUR_MILLIS));
-        headersArray[3] = new BasicHeader("cache-control", "public, max-age=86400");
-        headersArray[4] = new BasicHeader("content-type", "text/plain");
-
-        Map<String, String> headers = BasicNetwork.convertHeaders(headersArray);
-        NetworkResponse response = new NetworkResponse(0, null, headers, false);
-        Cache.Entry entry = HttpHeaderParser.parseCacheHeaders(response);
-
-        assertNotNull(entry);
-        assertEquals("Yow!", entry.etag);
-        assertEqualsWithin(now + ONE_DAY_MILLIS, entry.ttl, ONE_MINUTE_MILLIS);
-        assertEquals(entry.softTtl, entry.ttl);
-        assertEquals("ISO-8859-1", HttpHeaderParser.parseCharset(headers));
-    }
 }

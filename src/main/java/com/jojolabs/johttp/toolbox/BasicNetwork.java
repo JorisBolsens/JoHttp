@@ -153,7 +153,8 @@ public class BasicNetwork implements Network {
                 attemptRetryOnException("socket", request, new TimeoutError());
             } catch (MalformedURLException e) {
                 throw new RuntimeException("Bad URL " + request.getUrl(), e);
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 int statusCode = 0;
                 NetworkResponse networkResponse = null;
                 if (httpResponse != null) {

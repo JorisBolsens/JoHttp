@@ -3,15 +3,15 @@ package com.jojolabs.johttp.mock;
 import com.jojolabs.johttp.AuthFailureError;
 import com.jojolabs.johttp.Request;
 import com.jojolabs.johttp.toolbox.HttpStack;
+import com.jojolabs.johttp.toolbox.VolleyResponse;
 
-import org.apache.http.HttpResponse;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MockHttpStack implements HttpStack {
 
-    private HttpResponse mResponseToReturn;
+    private VolleyResponse mResponseToReturn;
 
     private String mLastUrl;
 
@@ -31,15 +31,15 @@ public class MockHttpStack implements HttpStack {
         return mLastPostBody;
     }
 
-    public void setResponseToReturn(HttpResponse response) {
+    public void setResponseToReturn(VolleyResponse response) {
         mResponseToReturn = response;
     }
 
     @Override
-    public HttpResponse performRequest(Request<?> request, Map<String, String> additionalHeaders)
+    public VolleyResponse performRequest(Request<?> request, Map<String, String> additionalHeaders)
             throws AuthFailureError {
         mLastUrl = request.getUrl();
-        mLastHeaders = new HashMap<String, String>();
+        mLastHeaders = new HashMap<>();
         if (request.getHeaders() != null) {
             mLastHeaders.putAll(request.getHeaders());
         }

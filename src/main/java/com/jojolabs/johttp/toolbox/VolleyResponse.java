@@ -50,6 +50,8 @@ public class VolleyResponse {
     }
 
     public Map<String, List<String>> getHeaders() {
+        if (headers == null)
+            headers = new HashMap<>();
         return headers;
     }
 
