@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
-import com.jojolabs.johttp.VolleyError;
+import com.jojolabs.johttp.HttpError;
 import com.jojolabs.johttp.toolbox.ImageLoader.ImageContainer;
 import com.jojolabs.johttp.toolbox.ImageLoader.ImageListener;
 
@@ -135,7 +135,7 @@ public class NetworkImageView extends ImageView {
         ImageContainer newContainer = mImageLoader.get(mUrl,
                 new ImageListener() {
                     @Override
-                    public void onErrorResponse(VolleyError error) {
+                    public void onErrorResponse(HttpError error) {
                         if (mErrorImageId != 0) {
                             setImageResource(mErrorImageId);
                         }

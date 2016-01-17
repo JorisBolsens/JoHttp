@@ -2,7 +2,7 @@ package com.jojolabs.johttp.toolbox;
 
 import com.jojolabs.johttp.Request;
 import com.jojolabs.johttp.Response;
-import com.jojolabs.johttp.VolleyError;
+import com.jojolabs.johttp.HttpError;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * A Future that represents a Volley request.
+ * A Future that represents a JoHttp request.
  *
  * Used by providing as your response and error listeners. For example:
  * <pre>
@@ -40,7 +40,7 @@ public class RequestFuture<T> implements Future<T>, Response.Listener<T>,
     private Request<?> mRequest;
     private boolean mResultReceived = false;
     private T mResult;
-    private VolleyError mException;
+    private HttpError mException;
 
     public static <E> RequestFuture<E> newFuture() {
         return new RequestFuture<E>();
@@ -129,7 +129,7 @@ public class RequestFuture<T> implements Future<T>, Response.Listener<T>,
     }
 
     @Override
-    public synchronized void onErrorResponse(VolleyError error) {
+    public synchronized void onErrorResponse(HttpError error) {
         mException = error;
         notifyAll();
     }

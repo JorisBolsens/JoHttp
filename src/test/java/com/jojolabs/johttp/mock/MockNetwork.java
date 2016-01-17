@@ -4,7 +4,7 @@ import com.jojolabs.johttp.Network;
 import com.jojolabs.johttp.NetworkResponse;
 import com.jojolabs.johttp.Request;
 import com.jojolabs.johttp.ServerError;
-import com.jojolabs.johttp.VolleyError;
+import com.jojolabs.johttp.HttpError;
 
 public class MockNetwork implements Network {
     public final static int ALWAYS_THROW_EXCEPTIONS = -1;
@@ -27,7 +27,7 @@ public class MockNetwork implements Network {
     public Request<?> requestHandled = null;
 
     @Override
-    public NetworkResponse performRequest(Request<?> request) throws VolleyError {
+    public NetworkResponse performRequest(Request<?> request) throws HttpError {
         if (mNumExceptionsToThrow > 0 || mNumExceptionsToThrow == ALWAYS_THROW_EXCEPTIONS) {
             if (mNumExceptionsToThrow != ALWAYS_THROW_EXCEPTIONS) {
                 mNumExceptionsToThrow--;

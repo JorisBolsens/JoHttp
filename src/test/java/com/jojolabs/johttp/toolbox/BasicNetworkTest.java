@@ -5,10 +5,6 @@ import com.jojolabs.johttp.Request;
 import com.jojolabs.johttp.Response;
 import com.jojolabs.johttp.mock.MockHttpStack;
 
-import org.apache.http.ProtocolVersion;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHttpResponse;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -25,7 +21,7 @@ public class BasicNetworkTest {
 
     @Test public void headersAndPostParams() throws Exception {
         MockHttpStack mockHttpStack = new MockHttpStack();
-        VolleyResponse fakeResponse = new VolleyResponse();
+        HttpResponse fakeResponse = new HttpResponse();
         fakeResponse.setStatusCode(200);
         InputStream inputStream = new ByteArrayInputStream("foobar".getBytes());
         fakeResponse.setContent(inputStream);

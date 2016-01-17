@@ -7,10 +7,10 @@ import com.jojolabs.johttp.RequestQueue;
 
 import java.io.File;
 
-public class Volley {
+public class JoHttp {
 
     /** Default on-disk cache directory. */
-    private static final String DEFAULT_CACHE_DIR = "volley";
+    private static final String DEFAULT_CACHE_DIR = "johttp";
 
     /**
      * Creates a default instance of the worker pool and calls {@link RequestQueue#start()} on it.

@@ -46,8 +46,8 @@ public class RequestTest {
         assertNotNull(Request.class.getMethod("markDelivered"));
         assertNotNull(Request.class.getMethod("hasHadResponseDelivered"));
         assertNotNull(Request.class.getDeclaredMethod("parseNetworkResponse", NetworkResponse.class));
-        assertNotNull(Request.class.getDeclaredMethod("parseNetworkError", VolleyError.class));
+        assertNotNull(Request.class.getDeclaredMethod("parseNetworkError", HttpError.class));
         assertNotNull(Request.class.getDeclaredMethod("deliverResponse", Object.class));
-        assertNotNull(Request.class.getMethod("deliverError", VolleyError.class));
+        assertNotNull(Request.class.getMethod("deliverError", HttpError.class));
     }
 }

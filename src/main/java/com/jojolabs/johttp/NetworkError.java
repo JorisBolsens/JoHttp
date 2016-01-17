@@ -1,10 +1,10 @@
 package com.jojolabs.johttp;
 
 /**
- * Indicates that there was a network error when performing a Volley request.
+ * Indicates that there was a network error when performing a JoHttp request.
  */
 @SuppressWarnings("serial")
-public class NetworkError extends VolleyError {
+public class NetworkError extends HttpError {
     public NetworkError() {
         super();
     }

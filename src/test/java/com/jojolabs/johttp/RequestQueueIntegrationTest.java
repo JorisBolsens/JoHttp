@@ -171,7 +171,7 @@ public class RequestQueueIntegrationTest {
         Request request = new MockRequest();
         RequestQueue queue = new RequestQueue(new NoCache(), mMockNetwork, 1, mDelivery);
 
-        when(mMockNetwork.performRequest(request)).thenThrow(new VolleyError());
+        when(mMockNetwork.performRequest(request)).thenThrow(new HttpError());
 
         queue.addRequestFinishedListener(listener);
         queue.start();

@@ -6,11 +6,11 @@ import android.graphics.BitmapFactory;
 import android.widget.ImageView.ScaleType;
 
 import com.jojolabs.johttp.DefaultRetryPolicy;
+import com.jojolabs.johttp.HttpLog;
 import com.jojolabs.johttp.NetworkResponse;
 import com.jojolabs.johttp.ParseError;
 import com.jojolabs.johttp.Request;
 import com.jojolabs.johttp.Response;
-import com.jojolabs.johttp.VolleyLog;
 
 /**
  * A canned request for getting an image at a given URL and calling
@@ -65,16 +65,6 @@ public class ImageRequest extends Request<Bitmap> {
         mScaleType = scaleType;
     }
 
-    /**
-     * For API compatibility with the pre-ScaleType variant of the constructor. Equivalent to
-     * the normal constructor with {@code ScaleType.CENTER_INSIDE}.
-     */
-    @Deprecated
-    public ImageRequest(String url, Response.Listener<Bitmap> listener, int maxWidth, int maxHeight,
-            Config decodeConfig, Response.ErrorListener errorListener) {
-        this(url, listener, maxWidth, maxHeight,
-                ScaleType.CENTER_INSIDE, decodeConfig, errorListener);
-    }
     @Override
     public Priority getPriority() {
         return Priority.LOW;
@@ -142,7 +132,7 @@ public class ImageRequest extends Request<Bitmap> {
             try {
                 return doParse(response);
             } catch (OutOfMemoryError e) {
-                VolleyLog.e("Caught OOM for %d byte image, url=%s", response.data.length, getUrl());
+                HttpLog.e("Caught OOM for %d byte image, url=%s", response.data.length, getUrl());
                 return Response.error(new ParseError(e));
             }
         }

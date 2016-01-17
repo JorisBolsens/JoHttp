@@ -4,7 +4,7 @@ import com.jojolabs.johttp.NetworkResponse;
 import com.jojolabs.johttp.Request;
 import com.jojolabs.johttp.Response;
 import com.jojolabs.johttp.Response.ErrorListener;
-import com.jojolabs.johttp.VolleyError;
+import com.jojolabs.johttp.HttpError;
 import com.jojolabs.johttp.utils.CacheTestUtils;
 
 import java.util.HashMap;
@@ -23,11 +23,6 @@ public class MockRequest extends Request<byte[]> {
 
     public void setPostParams(Map<String, String> postParams) {
         mPostParams = postParams;
-    }
-
-    @Override
-    public Map<String, String> getPostParams() {
-        return mPostParams;
     }
 
     private String mCacheKey = super.getCacheKey();
@@ -52,7 +47,7 @@ public class MockRequest extends Request<byte[]> {
     public boolean deliverError_called = false;
 
     @Override
-    public void deliverError(VolleyError error) {
+    public void deliverError(HttpError error) {
         super.deliverError(error);
         deliverError_called = true;
     }

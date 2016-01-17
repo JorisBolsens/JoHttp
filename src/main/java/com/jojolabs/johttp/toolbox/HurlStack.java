@@ -59,7 +59,7 @@ public class HurlStack implements HttpStack {
     }
 
     @Override
-    public VolleyResponse performRequest(Request<?> request, Map<String, String> additionalHeaders)
+    public HttpResponse performRequest(Request<?> request, Map<String, String> additionalHeaders)
             throws IOException, AuthFailureError {
         String url = request.getUrl();
         HashMap<String, String> map = new HashMap<String, String>();
@@ -85,7 +85,7 @@ public class HurlStack implements HttpStack {
             // Signal to the caller that something was wrong with the connection.
             throw new IOException("Could not retrieve response code from HttpUrlConnection.");
         }
-        VolleyResponse response = new VolleyResponse();
+        HttpResponse response = new HttpResponse();
         if (hasResponseBody(request.getMethod(), connection.getResponseCode())) {
              response = responseFromConnection(connection);
         }
@@ -113,12 +113,12 @@ public class HurlStack implements HttpStack {
     }
 
     /**
-     * Initializes an {@link VolleyResponse} from the given {@link HttpURLConnection}.
+     * Initializes an {@link HttpResponse} from the given {@link HttpURLConnection}.
      * @param connection
-     * @return an {@link VolleyResponse} populated with data from <code>connection</code>.
+     * @return an {@link HttpResponse} populated with data from <code>connection</code>.
      */
-    private static VolleyResponse responseFromConnection(HttpURLConnection connection) {
-        VolleyResponse response = new VolleyResponse();
+    private static HttpResponse responseFromConnection(HttpURLConnection connection) {
+        HttpResponse response = new HttpResponse();
         InputStream inputStream;
         try {
             inputStream = connection.getInputStream();
@@ -172,24 +172,6 @@ public class HurlStack implements HttpStack {
     /* package */ static void setConnectionParametersForRequest(HttpURLConnection connection,
             Request<?> request) throws IOException, AuthFailureError {
         switch (request.getMethod()) {
-            case Method.DEPRECATED_GET_OR_POST:
-                // This is the deprecated way that needs to be handled for backwards compatibility.
-                // If the request's post body is null, then the assumption is that the request is
-                // GET.  Otherwise, it is assumed that the request is a POST.
-                byte[] postBody = request.getPostBody();
-                if (postBody != null) {
-                    // Prepare output. There is no need to set Content-Length explicitly,
-                    // since this is handled by HttpURLConnection using the size of the prepared
-                    // output stream.
-                    connection.setDoOutput(true);
-                    connection.setRequestMethod("POST");
-                    connection.addRequestProperty(HEADER_CONTENT_TYPE,
-                            request.getPostBodyContentType());
-                    DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-                    out.write(postBody);
-                    out.close();
-                }
-                break;
             case Method.GET:
                 // Not necessary to set the request method because connection defaults to GET but
                 // being explicit here.

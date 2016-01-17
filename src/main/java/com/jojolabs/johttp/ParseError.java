@@ -4,7 +4,7 @@ package com.jojolabs.johttp;
  * Indicates that the server's response could not be parsed.
  */
 @SuppressWarnings("serial")
-public class ParseError extends VolleyError {
+public class ParseError extends HttpError {
     public ParseError() { }
 
     public ParseError(NetworkResponse networkResponse) {

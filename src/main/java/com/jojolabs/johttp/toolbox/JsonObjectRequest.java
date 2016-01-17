@@ -1,5 +1,6 @@
 package com.jojolabs.johttp.toolbox;
 
+import com.jojolabs.johttp.HttpError;
 import com.jojolabs.johttp.NetworkResponse;
 import com.jojolabs.johttp.ParseError;
 import com.jojolabs.johttp.Response;
@@ -46,6 +47,18 @@ public class JsonObjectRequest extends JsonRequest<JSONObject> {
 
     @Override
     protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+
+        new JsonObjectRequest(Method.GET, "something", null, new Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                //handle resp
+            }
+        }, new ErrorListener() {
+            @Override
+            public void onErrorResponse(HttpError error) {
+                //handle error
+            }
+        });
         try {
             String jsonString = new String(response.data,
                     HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));

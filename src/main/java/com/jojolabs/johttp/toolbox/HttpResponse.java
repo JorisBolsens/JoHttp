@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Created by joris on 1/16/16.
  */
-public class VolleyResponse {
+public class HttpResponse {
     private int statusCode;
     private InputStream content;
     private int contentLength;

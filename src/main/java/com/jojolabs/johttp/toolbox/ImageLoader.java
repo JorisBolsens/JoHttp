@@ -10,7 +10,7 @@ import com.jojolabs.johttp.Request;
 import com.jojolabs.johttp.RequestQueue;
 import com.jojolabs.johttp.Response.ErrorListener;
 import com.jojolabs.johttp.Response.Listener;
-import com.jojolabs.johttp.VolleyError;
+import com.jojolabs.johttp.HttpError;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -31,7 +31,7 @@ public class ImageLoader {
     /** Amount of time to wait after first response arrives before delivering all responses. */
     private int mBatchResponseDelayMs = 100;
 
-    /** The cache implementation to be used as an L1 cache before calling into volley. */
+    /** The cache implementation to be used as an L1 cache before calling into johttp. */
     private final ImageCache mCache;
 
     /**
@@ -53,7 +53,7 @@ public class ImageLoader {
 
     /**
      * Simple cache adapter interface. If provided to the ImageLoader, it
-     * will be used as an L1 cache before dispatch to Volley. Implementations
+     * will be used as an L1 cache before dispatch to JoHttp. Implementations
      * must not block. Implementation with an LruCache is recommended.
      */
     public interface ImageCache {
@@ -83,7 +83,7 @@ public class ImageLoader {
             final int defaultImageResId, final int errorImageResId) {
         return new ImageListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onErrorResponse(HttpError error) {
                 if (errorImageResId != 0) {
                     view.setImageResource(errorImageResId);
                 }
@@ -241,7 +241,7 @@ public class ImageLoader {
             }
         }, maxWidth, maxHeight, scaleType, Config.RGB_565, new ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onErrorResponse(HttpError error) {
                 onGetImageError(cacheKey, error);
             }
         });
@@ -281,7 +281,7 @@ public class ImageLoader {
      * Handler for when an image failed to load.
      * @param cacheKey The cache key that is associated with the image request.
      */
-    protected void onGetImageError(String cacheKey, VolleyError error) {
+    protected void onGetImageError(String cacheKey, HttpError error) {
         // Notify the requesters that something failed via a null result.
         // Remove this request from the list of in-flight requests.
         BatchedImageRequest request = mInFlightRequests.remove(cacheKey);
@@ -380,7 +380,7 @@ public class ImageLoader {
         private Bitmap mResponseBitmap;
 
         /** Error if one occurred for this response */
-        private VolleyError mError;
+        private HttpError mError;
 
         /** List of all of the active ImageContainers that are interested in the request */
         private final LinkedList<ImageContainer> mContainers = new LinkedList<ImageContainer>();
@@ -398,14 +398,14 @@ public class ImageLoader {
         /**
          * Set the error for this response
          */
-        public void setError(VolleyError error) {
+        public void setError(HttpError error) {
             mError = error;
         }
 
         /**
          * Get the error for this response
          */
-        public VolleyError getError() {
+        public HttpError getError() {
             return mError;
         }
 

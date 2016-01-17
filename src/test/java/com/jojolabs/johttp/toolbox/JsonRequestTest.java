@@ -15,8 +15,6 @@ public class JsonRequestTest {
     @Test
     public void publicMethods() throws Exception {
         // Catch-all test to find API-breaking changes.
-        assertNotNull(JsonRequest.class.getConstructor(String.class, String.class,
-                Response.Listener.class, Response.ErrorListener.class));
         assertNotNull(JsonRequest.class.getConstructor(int.class, String.class, String.class,
                 Response.Listener.class, Response.ErrorListener.class));
 

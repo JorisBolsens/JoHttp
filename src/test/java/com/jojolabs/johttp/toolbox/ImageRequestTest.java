@@ -149,8 +149,6 @@ public class ImageRequestTest {
     public void publicMethods() throws Exception {
         // Catch-all test to find API-breaking changes.
         assertNotNull(ImageRequest.class.getConstructor(String.class, Response.Listener.class,
-                int.class, int.class, Bitmap.Config.class, Response.ErrorListener.class));
-        assertNotNull(ImageRequest.class.getConstructor(String.class, Response.Listener.class,
                 int.class, int.class, ImageView.ScaleType.class, Bitmap.Config.class,
                 Response.ErrorListener.class));
         assertEquals(ImageRequest.DEFAULT_IMAGE_TIMEOUT_MS, 1000);

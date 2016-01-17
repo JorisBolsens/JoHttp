@@ -1,7 +1,7 @@
 package com.jojolabs.johttp;
 
 /**
- * Error indicating that no connection could be established when performing a Volley request.
+ * Error indicating that no connection could be established when performing a JoHttp request.
  */
 @SuppressWarnings("serial")
 public class NoConnectionError extends NetworkError {

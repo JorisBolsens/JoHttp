@@ -20,24 +20,6 @@ public class HurlStackTest {
         mMockConnection = new MockHttpURLConnection();
     }
 
-    @Test public void connectionForDeprecatedGetRequest() throws Exception {
-        TestRequest.DeprecatedGet request = new TestRequest.DeprecatedGet();
-        assertEquals(request.getMethod(), Method.DEPRECATED_GET_OR_POST);
-
-        HurlStack.setConnectionParametersForRequest(mMockConnection, request);
-        assertEquals("GET", mMockConnection.getRequestMethod());
-        assertFalse(mMockConnection.getDoOutput());
-    }
-
-    @Test public void connectionForDeprecatedPostRequest() throws Exception {
-        TestRequest.DeprecatedPost request = new TestRequest.DeprecatedPost();
-        assertEquals(request.getMethod(), Method.DEPRECATED_GET_OR_POST);
-
-        HurlStack.setConnectionParametersForRequest(mMockConnection, request);
-        assertEquals("POST", mMockConnection.getRequestMethod());
-        assertTrue(mMockConnection.getDoOutput());
-    }
-
     @Test public void connectionForGetRequest() throws Exception {
         TestRequest.Get request = new TestRequest.Get();
         assertEquals(request.getMethod(), Method.GET);

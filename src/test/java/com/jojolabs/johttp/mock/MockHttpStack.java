@@ -3,7 +3,7 @@ package com.jojolabs.johttp.mock;
 import com.jojolabs.johttp.AuthFailureError;
 import com.jojolabs.johttp.Request;
 import com.jojolabs.johttp.toolbox.HttpStack;
-import com.jojolabs.johttp.toolbox.VolleyResponse;
+import com.jojolabs.johttp.toolbox.HttpResponse;
 
 
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class MockHttpStack implements HttpStack {
 
-    private VolleyResponse mResponseToReturn;
+    private HttpResponse mResponseToReturn;
 
     private String mLastUrl;
 
@@ -31,12 +31,12 @@ public class MockHttpStack implements HttpStack {
         return mLastPostBody;
     }
 
-    public void setResponseToReturn(VolleyResponse response) {
+    public void setResponseToReturn(HttpResponse response) {
         mResponseToReturn = response;
     }
 
     @Override
-    public VolleyResponse performRequest(Request<?> request, Map<String, String> additionalHeaders)
+    public HttpResponse performRequest(Request<?> request, Map<String, String> additionalHeaders)
             throws AuthFailureError {
         mLastUrl = request.getUrl();
         mLastHeaders = new HashMap<>();

@@ -10,17 +10,17 @@ import java.util.Locale;
 /**
  * Logging helper class.
  * <p/>
- * to see Volley logs call:<br/>
- * {@code <android-sdk>/platform-tools/adb shell setprop log.tag.Volley VERBOSE}
+ * to see JoHttp logs call:<br/>
+ * {@code <android-sdk>/platform-tools/adb shell setprop log.tag.JoHttp VERBOSE}
  */
-public class VolleyLog {
-    public static String TAG = "Volley";
+public class HttpLog {
+    public static String TAG = "JoHttp";
 
     public static boolean DEBUG = Log.isLoggable(TAG, Log.VERBOSE);
 
     /**
      * Customize the log tag for your application, so that other apps
-     * using Volley don't mix their logs with yours.
+     * using JoHttp don't mix their logs with yours.
      * <br />
      * Enable the log property for your tag before starting your app:
      * <br />
@@ -69,11 +69,11 @@ public class VolleyLog {
         StackTraceElement[] trace = new Throwable().fillInStackTrace().getStackTrace();
 
         String caller = "<unknown>";
-        // Walk up the stack looking for the first caller outside of VolleyLog.
+        // Walk up the stack looking for the first caller outside of HttpLog.
         // It will be at least two frames up, so start there.
         for (int i = 2; i < trace.length; i++) {
             Class<?> clazz = trace[i].getClass();
-            if (!clazz.equals(VolleyLog.class)) {
+            if (!clazz.equals(HttpLog.class)) {
                 String callingClass = trace[i].getClassName();
                 callingClass = callingClass.substring(callingClass.lastIndexOf('.') + 1);
                 callingClass = callingClass.substring(callingClass.lastIndexOf('$') + 1);
@@ -90,7 +90,7 @@ public class VolleyLog {
      * A simple event log with records containing a name, thread ID, and timestamp.
      */
     static class MarkerLog {
-        public static final boolean ENABLED = VolleyLog.DEBUG;
+        public static final boolean ENABLED = HttpLog.DEBUG;
 
         /** Minimum duration from first marker to last in an marker log to warrant logging. */
         private static final long MIN_DURATION_FOR_LOGGING_MS = 0;

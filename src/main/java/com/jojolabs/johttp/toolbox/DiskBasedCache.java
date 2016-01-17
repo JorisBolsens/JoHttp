@@ -3,7 +3,7 @@ package com.jojolabs.johttp.toolbox;
 import android.os.SystemClock;
 
 import com.jojolabs.johttp.Cache;
-import com.jojolabs.johttp.VolleyLog;
+import com.jojolabs.johttp.HttpLog;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -81,7 +81,7 @@ public class DiskBasedCache implements Cache {
         }
         mEntries.clear();
         mTotalSize = 0;
-        VolleyLog.d("Cache cleared.");
+        HttpLog.d("Cache cleared.");
     }
 
     /**
@@ -103,7 +103,7 @@ public class DiskBasedCache implements Cache {
             byte[] data = streamToBytes(cis, (int) (file.length() - cis.bytesRead));
             return entry.toCacheEntry(data);
         } catch (IOException e) {
-            VolleyLog.d("%s: %s", file.getAbsolutePath(), e.toString());
+            HttpLog.d("%s: %s", file.getAbsolutePath(), e.toString());
             remove(key);
             return null;
         } finally {
@@ -125,7 +125,7 @@ public class DiskBasedCache implements Cache {
     public synchronized void initialize() {
         if (!mRootDirectory.exists()) {
             if (!mRootDirectory.mkdirs()) {
-                VolleyLog.e("Unable to create cache dir %s", mRootDirectory.getAbsolutePath());
+                HttpLog.e("Unable to create cache dir %s", mRootDirectory.getAbsolutePath());
             }
             return;
         }
@@ -186,7 +186,7 @@ public class DiskBasedCache implements Cache {
             boolean success = e.writeHeader(fos);
             if (!success) {
                 fos.close();
-                VolleyLog.d("Failed to write header for %s", file.getAbsolutePath());
+                HttpLog.d("Failed to write header for %s", file.getAbsolutePath());
                 throw new IOException();
             }
             fos.write(entry.data);
@@ -197,7 +197,7 @@ public class DiskBasedCache implements Cache {
         }
         boolean deleted = file.delete();
         if (!deleted) {
-            VolleyLog.d("Could not clean up file %s", file.getAbsolutePath());
+            HttpLog.d("Could not clean up file %s", file.getAbsolutePath());
         }
     }
 
@@ -209,7 +209,7 @@ public class DiskBasedCache implements Cache {
         boolean deleted = getFileForKey(key).delete();
         removeEntry(key);
         if (!deleted) {
-            VolleyLog.d("Could not delete cache entry for key=%s, filename=%s",
+            HttpLog.d("Could not delete cache entry for key=%s, filename=%s",
                     key, getFilenameForKey(key));
         }
     }
@@ -241,8 +241,8 @@ public class DiskBasedCache implements Cache {
         if ((mTotalSize + neededSpace) < mMaxCacheSizeInBytes) {
             return;
         }
-        if (VolleyLog.DEBUG) {
-            VolleyLog.v("Pruning old cache entries.");
+        if (HttpLog.DEBUG) {
+            HttpLog.v("Pruning old cache entries.");
         }
 
         long before = mTotalSize;
@@ -257,7 +257,7 @@ public class DiskBasedCache implements Cache {
             if (deleted) {
                 mTotalSize -= e.size;
             } else {
-               VolleyLog.d("Could not delete cache entry for key=%s, filename=%s",
+               HttpLog.d("Could not delete cache entry for key=%s, filename=%s",
                        e.key, getFilenameForKey(e.key));
             }
             iterator.remove();
@@ -268,8 +268,8 @@ public class DiskBasedCache implements Cache {
             }
         }
 
-        if (VolleyLog.DEBUG) {
-            VolleyLog.v("pruned %d files, %d bytes, %d ms",
+        if (HttpLog.DEBUG) {
+            HttpLog.v("pruned %d files, %d bytes, %d ms",
                     prunedFiles, (mTotalSize - before), SystemClock.elapsedRealtime() - startTime);
         }
     }
@@ -422,7 +422,7 @@ public class DiskBasedCache implements Cache {
                 os.flush();
                 return true;
             } catch (IOException e) {
-                VolleyLog.d("%s", e.toString());
+                HttpLog.d("%s", e.toString());
                 return false;
             }
         }

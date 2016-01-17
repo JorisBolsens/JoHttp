@@ -5,6 +5,7 @@ import android.os.SystemClock;
 import com.jojolabs.johttp.AuthFailureError;
 import com.jojolabs.johttp.Cache;
 import com.jojolabs.johttp.Cache.Entry;
+import com.jojolabs.johttp.HttpLog;
 import com.jojolabs.johttp.Network;
 import com.jojolabs.johttp.NetworkError;
 import com.jojolabs.johttp.NetworkResponse;
@@ -13,8 +14,7 @@ import com.jojolabs.johttp.Request;
 import com.jojolabs.johttp.RetryPolicy;
 import com.jojolabs.johttp.ServerError;
 import com.jojolabs.johttp.TimeoutError;
-import com.jojolabs.johttp.VolleyError;
-import com.jojolabs.johttp.VolleyLog;
+import com.jojolabs.johttp.HttpError;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,10 +29,10 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * A network performing Volley requests over an {@link HttpStack}.
+ * A network performing JoHttp requests over an {@link HttpStack}.
  */
 public class BasicNetwork implements Network {
-    protected static final boolean DEBUG = VolleyLog.DEBUG;
+    protected static final boolean DEBUG = HttpLog.DEBUG;
 
     private static int SLOW_REQUEST_THRESHOLD_MS = 3000;
 
@@ -70,13 +70,13 @@ public class BasicNetwork implements Network {
      * @param request The request to use.
      */
     private static void attemptRetryOnException(String logPrefix, Request<?> request,
-                                                VolleyError exception) throws VolleyError {
+                                                HttpError exception) throws HttpError {
         RetryPolicy retryPolicy = request.getRetryPolicy();
         int oldTimeout = request.getTimeoutMs();
 
         try {
             retryPolicy.retry(exception);
-        } catch (VolleyError e) {
+        } catch (HttpError e) {
             request.addMarker(
                     String.format("%s-timeout-giveup [timeout=%s]", logPrefix, oldTimeout));
             throw e;
@@ -96,10 +96,10 @@ public class BasicNetwork implements Network {
     }
 
     @Override
-    public NetworkResponse performRequest(Request<?> request) throws VolleyError {
+    public NetworkResponse performRequest(Request<?> request) throws HttpError {
         long requestStart = SystemClock.elapsedRealtime();
         while (true) {
-            VolleyResponse httpResponse = null;
+            HttpResponse httpResponse = null;
             byte[] responseContents = null;
             Map<String, String> responseHeaders = Collections.emptyMap();
             try {
@@ -162,7 +162,7 @@ public class BasicNetwork implements Network {
                 } else {
                     throw new NoConnectionError(e);
                 }
-                VolleyLog.e("Unexpected response code %d for %s", statusCode, request.getUrl());
+                HttpLog.e("Unexpected response code %d for %s", statusCode, request.getUrl());
                 if (responseContents != null) {
                     networkResponse = new NetworkResponse(statusCode, responseContents,
                             responseHeaders, false, SystemClock.elapsedRealtime() - requestStart);
@@ -187,7 +187,7 @@ public class BasicNetwork implements Network {
     private void logSlowRequests(long requestLifetime, Request<?> request,
                                  byte[] responseContents, int statusCode) {
         if (DEBUG || requestLifetime > SLOW_REQUEST_THRESHOLD_MS) {
-            VolleyLog.d("HTTP response for request=<%s> [lifetime=%d], [size=%s], " +
+            HttpLog.d("HTTP response for request=<%s> [lifetime=%d], [size=%s], " +
                             "[rc=%d], [retryCount=%s]", request, requestLifetime,
                     responseContents != null ? responseContents.length : "null",
                     statusCode, request.getRetryPolicy().getCurrentRetryCount());
@@ -212,13 +212,13 @@ public class BasicNetwork implements Network {
 
     protected void logError(String what, String url, long start) {
         long now = SystemClock.elapsedRealtime();
-        VolleyLog.v("HTTP ERROR(%s) %d ms to fetch %s", what, (now - start), url);
+        HttpLog.v("HTTP ERROR(%s) %d ms to fetch %s", what, (now - start), url);
     }
 
     /**
-     * Reads the contents of VolleyResponse into a byte[].
+     * Reads the contents of HttpResponse into a byte[].
      */
-    private byte[] responseToBytes(VolleyResponse entity) throws IOException, ServerError {
+    private byte[] responseToBytes(HttpResponse entity) throws IOException, ServerError {
         byte[] buffer = null;
         PoolingByteArrayOutputStream bytes =
                 new PoolingByteArrayOutputStream(mPool, entity.getContentLength());
@@ -240,7 +240,7 @@ public class BasicNetwork implements Network {
             } catch (IOException e) {
                 // This can happen if there was an exception above that left the entity in
                 // an invalid state.
-                VolleyLog.v("Error occurred when calling consumingContent");
+                HttpLog.v("Error occurred when calling consumingContent");
             }
             mPool.returnBuf(buffer);
             bytes.close();

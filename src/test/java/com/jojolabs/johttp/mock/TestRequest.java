@@ -12,10 +12,6 @@ public class TestRequest {
 
     /** Base Request class for testing allowing both the deprecated and new constructor. */
     private static class Base extends Request<byte[]> {
-        @SuppressWarnings("deprecation")
-        public Base(String url, Response.ErrorListener listener) {
-            super(url, listener);
-        }
 
         public Base(int method, String url, Response.ErrorListener listener) {
             super(method, url, listener);
@@ -31,28 +27,6 @@ public class TestRequest {
         }
     }
 
-    /** Test example of a GET request in the deprecated style. */
-    public static class DeprecatedGet extends Base {
-        public DeprecatedGet() {
-            super(TEST_URL, null);
-        }
-    }
-
-    /** Test example of a POST request in the deprecated style. */
-    public static class DeprecatedPost extends Base {
-        private Map<String, String> mPostParams;
-
-        public DeprecatedPost() {
-            super(TEST_URL, null);
-            mPostParams = new HashMap<String, String>();
-            mPostParams.put("requestpost", "foo");
-        }
-
-        @Override
-        protected Map<String, String> getPostParams() {
-            return mPostParams;
-        }
-    }
 
     /** Test example of a GET request in the new style. */
     public static class Get extends Base {

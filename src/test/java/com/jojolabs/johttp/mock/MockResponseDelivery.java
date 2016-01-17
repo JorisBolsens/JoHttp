@@ -3,7 +3,7 @@ package com.jojolabs.johttp.mock;
 import com.jojolabs.johttp.Request;
 import com.jojolabs.johttp.Response;
 import com.jojolabs.johttp.ResponseDelivery;
-import com.jojolabs.johttp.VolleyError;
+import com.jojolabs.johttp.HttpError;
 
 public class MockResponseDelivery implements ResponseDelivery {
 
@@ -29,7 +29,7 @@ public class MockResponseDelivery implements ResponseDelivery {
     }
 
     @Override
-    public void postError(Request<?> request, VolleyError error) {
+    public void postError(Request<?> request, HttpError error) {
         postError_called = true;
     }
 }
