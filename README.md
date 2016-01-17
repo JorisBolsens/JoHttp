@@ -12,7 +12,8 @@ Using JoHttp is very simple. Simply instantiate a `RequestQueue`, start the queu
 RequestQueue queue = JoHttp.newRequestQueue(context);
 queue.start()
 
-JsonObjectRequest request = new JsonObjectRequest(Method.GET, "http://jojolabs.com", null, new Response.Listener<JSONObject>() {
+JsonObjectRequest request = new JsonObjectRequest(Method.GET, "http://jojolabs.com", null, 
+                                    new Response.Listener<JSONObject>() {
                                         @Override
                                         public void onResponse(JSONObject response) {
                                             //handle response
@@ -39,4 +40,6 @@ queue.cancelAll("myTag");
 
 ### Custom requests
 JoHttp already has a few default possible requests, a `JsonObjectRequest` and a `JsonArrayRequest`, a `StringRequest`, and an `ImageRequest`.
-It is also fairly simple to create your own custom request. Simply extend the `Request` class, and override a few methods, most importantly `parseNetworkResponse()`, this is what will take the raw response from the server and transform it into the `Object` you want.
+
+It is also fairly simple to create your own custom request. Simply extend the `Request` class, and override a few methods, most importantly `parseNetworkResponse()`, 
+this is what will take the raw response from the server and transform it into the `Object` you want.
