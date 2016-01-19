@@ -1,12 +1,17 @@
 package com.jojolabs.johttp.toolbox;
 
 import com.jojolabs.johttp.AuthFailureError;
+import com.jojolabs.johttp.HttpLog;
 import com.jojolabs.johttp.Request;
 import com.jojolabs.johttp.Request.Method;
+import com.jojolabs.johttp.ServerError;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -89,7 +94,7 @@ public class HurlStack implements HttpStack {
         if (hasResponseBody(request.getMethod(), connection.getResponseCode())) {
              response = responseFromConnection(connection);
         }
-
+        response.setStatusCode(responseCode);
         for (Entry<String, List<String>> header : connection.getHeaderFields().entrySet()) {
             if (header.getKey() != null) {
                 response.addHeader(header);
@@ -125,10 +130,12 @@ public class HurlStack implements HttpStack {
         } catch (IOException ioe) {
             inputStream = connection.getErrorStream();
         }
+
         response.setContent(inputStream);
         response.setContentLength(connection.getContentLength());
         response.setContentEncoding(connection.getContentEncoding());
         response.setContentType(connection.getContentType());
+
         return response;
     }
 
@@ -207,14 +214,62 @@ public class HurlStack implements HttpStack {
     }
 
     private static void addBodyIfExists(HttpURLConnection connection, Request<?> request)
-            throws IOException, AuthFailureError {
-        byte[] body = request.getBody();
-        if (body != null) {
+            throws AuthFailureError, IOException {
+        if(!request.canStream()) {
+            byte[] body = request.getBody();
+            if (body != null) {
+                connection.setDoOutput(true);
+                connection.addRequestProperty(HEADER_CONTENT_TYPE, request.getBodyContentType());
+                DataOutputStream out = null;
+                try {
+                    out = new DataOutputStream(connection.getOutputStream());
+                    out.write(body);
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
             connection.setDoOutput(true);
+            connection.setUseCaches(false);
+            connection.setChunkedStreamingMode(0);
+            connection.setRequestProperty("Connection", "Keep-Alive");
             connection.addRequestProperty(HEADER_CONTENT_TYPE, request.getBodyContentType());
-            DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-            out.write(body);
+            OutputStream out = connection.getOutputStream();
+            request.writeToStream(out);
+            out.flush();
             out.close();
         }
+    }
+
+    private static byte[] responseToBytes(HttpResponse entity) throws IOException, ServerError {
+        ByteArrayPool mPool = new ByteArrayPool(4096);
+        PoolingByteArrayOutputStream bytes =
+                new PoolingByteArrayOutputStream(mPool, (int) entity.getContentLength());
+        byte[] buffer = null;
+        try {
+            InputStream in = entity.getContent();
+            if (in == null) {
+                throw new ServerError();
+            }
+            buffer = mPool.getBuf(1024);
+            int count;
+            while ((count = in.read(buffer)) != -1) {
+                bytes.write(buffer, 0, count);
+            }
+            return bytes.toByteArray();
+        } finally {
+            try {
+                // Close the InputStream and release the resource.
+                entity.getContent().close();
+            } catch (IOException e) {
+                // This can happen if there was an exception above that left the entity in
+                // an invalid state.
+                HttpLog.v("Error occured when calling consumingContent");
+            }
+            mPool.returnBuf(buffer);
+            bytes.close();
+        }
+
     }
 }

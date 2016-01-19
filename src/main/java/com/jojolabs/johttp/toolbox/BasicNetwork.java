@@ -16,6 +16,7 @@ import com.jojolabs.johttp.ServerError;
 import com.jojolabs.johttp.TimeoutError;
 import com.jojolabs.johttp.HttpError;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -219,10 +220,10 @@ public class BasicNetwork implements Network {
      * Reads the contents of HttpResponse into a byte[].
      */
     private byte[] responseToBytes(HttpResponse entity) throws IOException, ServerError {
-        byte[] buffer = null;
         PoolingByteArrayOutputStream bytes =
-                new PoolingByteArrayOutputStream(mPool, entity.getContentLength());
-        try  {
+                new PoolingByteArrayOutputStream(mPool, (int) entity.getContentLength());
+        byte[] buffer = null;
+        try {
             InputStream in = entity.getContent();
             if (in == null) {
                 throw new ServerError();
@@ -235,15 +236,16 @@ public class BasicNetwork implements Network {
             return bytes.toByteArray();
         } finally {
             try {
-                // Close the InputStream and release the resources by "consuming the content".
+                // Close the InputStream and release the resource.
                 entity.getContent().close();
             } catch (IOException e) {
                 // This can happen if there was an exception above that left the entity in
                 // an invalid state.
-                HttpLog.v("Error occurred when calling consumingContent");
+                HttpLog.v("Error occured when calling consumingContent");
             }
             mPool.returnBuf(buffer);
             bytes.close();
         }
+
     }
 }

@@ -8,7 +8,11 @@ import android.text.TextUtils;
 
 import com.jojolabs.johttp.HttpLog.MarkerLog;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Map;
@@ -345,6 +349,14 @@ public abstract class Request<T> implements Comparable<Request<T>> {
     }
 
     /**
+     *
+     * @param out {@link OutputStream} to from {@link URLConnection#getOutputStream()}
+     */
+    public void writeToStream(OutputStream out) throws IOException {
+        throw new UnsupportedOperationException("This request cannot stream!");
+    }
+
+    /**
      * Converts <code>params</code> into an application/x-www-form-urlencoded encoded string.
      */
     private byte[] encodeParameters(Map<String, String> params, String paramsEncoding) {
@@ -469,6 +481,10 @@ public abstract class Request<T> implements Comparable<Request<T>> {
         if (mErrorListener != null) {
             mErrorListener.onErrorResponse(error);
         }
+    }
+
+    public boolean canStream() {
+        return false;
     }
 
     /**
