@@ -1,9 +1,9 @@
 package com.jojolabs.johttp.toolbox;
 
+import com.jojolabs.johttp.AuthFailureError;
 import com.jojolabs.johttp.Request;
 import com.jojolabs.johttp.Response;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,6 +23,7 @@ public abstract class MultiPartRequest<T> extends Request<T> {
     private String boundary = UUID.randomUUID().toString();
     private String ContentType = "multipart/form-data";
     private List<Part> parts = new ArrayList<>();
+    private Map<String, String> headers = new HashMap<>();
 
     public MultiPartRequest(int method, String url, Response.Listener<T> listener,
                             Response.ErrorListener errorListener){
@@ -33,6 +34,11 @@ public abstract class MultiPartRequest<T> extends Request<T> {
     @Override
     protected void deliverResponse(T response) {
         mListener.onResponse(response);
+    }
+
+    @Override
+    public Map<String, String> getHeaders() throws AuthFailureError {
+        return headers;
     }
 
     @Override
@@ -57,7 +63,12 @@ public abstract class MultiPartRequest<T> extends Request<T> {
             }
             //check if we are writing an InputStream or String
             if(part.isStream()){
-                out.write("Content-Type: application/octet-stream;".getBytes());
+                out.write("Content-Disposition: form-data; name=\"".getBytes());
+                out.write(part.getKey().getBytes());
+                out.write("\"".getBytes());
+                out.write(crlf.getBytes());
+                out.write("Content-Type: application/octet-stream".getBytes());
+                out.write(crlf.getBytes());
                 out.write(crlf.getBytes());
                 //send in 4k pieces
                 byte[] buf = new byte[4096];
@@ -68,9 +79,12 @@ public abstract class MultiPartRequest<T> extends Request<T> {
                 out.flush();
                 in.close();
             } else {
-                out.write("Content-Disposition: form-data, name=\"".getBytes());
+                out.write("Content-Disposition: form-data; name=\"".getBytes());
                 out.write(part.getKey().getBytes());
                 out.write("\"".getBytes());
+                out.write(crlf.getBytes());
+                out.write(("Content-Length: "+part.getValue().length()).getBytes());
+                out.write(crlf.getBytes());
                 out.write(crlf.getBytes());
                 out.write(part.getValue().getBytes());
                 out.flush();
@@ -92,11 +106,15 @@ public abstract class MultiPartRequest<T> extends Request<T> {
     @Override
     public String getBodyContentType() {
         return ContentType +
-                "; boundary=\""+boundary+"\"";
+                "; boundary="+boundary;
     }
 
     public void addPart(Part part) {
         parts.add(part);
+    }
+
+    public void addHeader(String key, String value) {
+        headers.put(key, value);
     }
 
     public String getBoundry() {
@@ -119,7 +137,8 @@ public abstract class MultiPartRequest<T> extends Request<T> {
             this.value = value;
         }
 
-        public  Part(File content) {
+        public  Part(String name, File content) {
+            key = name;
             file = content;
             isStream = true;
         }
