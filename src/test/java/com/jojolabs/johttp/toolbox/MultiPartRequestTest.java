@@ -29,6 +29,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -68,12 +69,10 @@ public class MultiPartRequestTest {
 
     @Test
     public void multipartStringBody() {
-        ShadowLooper.runUiThreadTasks();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         MockResponse response = new MockResponse();
         response.addHeader("Content-Type", "application/json; encoding=\"utf-8\"");
         response.setResponseCode(201);
-        response.setBody("super cool");
+        response.setBody("{\"super\":\"cool\"}");
 
         server.enqueue(response);
 
@@ -107,7 +106,7 @@ public class MultiPartRequestTest {
             fail();
         }
 
-        File cacheDir = new File(RuntimeEnvironment.application.getCacheDir(), "volley");
+        File cacheDir = new File(RuntimeEnvironment.application.getCacheDir(), "JoHttp");
         HttpStack stack = new HurlStack();
         Network network = new BasicNetwork(stack);
         RequestQueue joHttp = new RequestQueue(new DiskBasedCache(cacheDir), network, 4,
@@ -132,7 +131,7 @@ public class MultiPartRequestTest {
                 line = bufferedReader.readLine();
             }
             assertTrue(body.toString() != null && !body.toString().equalsIgnoreCase(""));
-            countDownLatch.await();
+            countDownLatch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
             fail();
